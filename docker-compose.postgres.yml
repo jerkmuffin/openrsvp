@@ -29,7 +29,8 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
-
+    networks:
+      - openrsvp-net
 # Production note: this compose file uses sslmode=disable, which is only
 # acceptable for the local docker bridge network. For production Postgres,
 # set sslmode=require (or verify-full) and supply TLS certificates.

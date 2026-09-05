@@ -1,0 +1,5 @@
+services:
+  openrsvp:
+    environment:
+      ENV: production
+      BASE_URL: https://rsvp.fml.pizza
