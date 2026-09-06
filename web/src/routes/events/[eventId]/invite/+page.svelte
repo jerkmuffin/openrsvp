@@ -34,6 +34,8 @@
 
 	// Background image
 	let backgroundImageUrl = $state('');
+	let overlayOpacity = $state(0.35);
+	let textColor = $state('#292524');
 	let uploading = $state(false);
 
 	const templates = [
@@ -107,12 +109,15 @@
 		{ value: 'Arial', label: 'Arial (Clean)' }
 	];
 
-	const customDataJSON = $derived(
+	const customData = $derived(
 		backgroundImageUrl
-			? JSON.stringify({ backgroundImage: backgroundImageUrl })
-			: '{}'
+			? JSON.stringify({
+				backgroundImage: backgroundImageUrl,
+				overlayOpacity,
+				textColor
+				})
+		: '{}'
 	);
-
 	onMount(async () => {
 		try {
 			const [eventResult, inviteResult] = await Promise.all([
@@ -139,6 +144,14 @@
 					if (cd.backgroundImage) {
 						backgroundImageUrl = cd.backgroundImage;
 					}
+
+					if (typeof cd.overlayOpacity === 'number') {
+						overlayOpacity = cd.overlayOpacity;
+					}
+
+					if (typeof cd.textColor === 'string') {
+						textColor = cd.textColor;
+					}
 				} catch {
 					// ignore parse errors
 				}
@@ -162,7 +175,7 @@
 				primaryColor,
 				secondaryColor,
 				font,
-				customData: customDataJSON
+				customData: customData
 			});
 			saved = true;
 			toast.success('Invite design saved!');
@@ -321,6 +334,38 @@
 									class="h-10 w-full rounded-lg border border-neutral-300 cursor-pointer"
 								/>
 							</div>
+							<div>
+								<label for="overlayOpacity" class="block text-sm font-medium text-neutral-700">
+									Background Overlay
+								</label>
+
+								<input
+									id="overlayOpacity"
+									type="range"
+									min="0"
+									max="0.9"
+									step="0.05"
+									bind:value={overlayOpacity}
+									class="w-full"
+								/>
+
+								<p class="text-xs text-neutral-500">
+									{Math.round(overlayOpacity * 100)}%
+								</p>
+							</div>
+
+							<div>
+								<label for="textColor" class="block text-sm font-medium text-neutral-700">
+									Text Color
+								</label>
+
+								<input
+									id="textColor"
+									type="color"
+									bind:value={textColor}
+									class="h-10 w-16 rounded border border-neutral-300"
+								/>
+							</div>
 						</div>
 
 						<Select label="Font" name="font" bind:value={font} options={fontOptions} />
@@ -417,7 +462,7 @@
 						eventTitle={event?.title || ''}
 						eventDate={event?.eventDate || ''}
 						eventLocation={event?.location || ''}
-						customData={customDataJSON}
+						customData={customData}
 						timezone={event?.timezone}
 					/>
 				</div>

@@ -62,6 +62,14 @@
 	const backgroundImage = $derived(sanitizeBackgroundURL(parsedCustomData?.backgroundImage));
 
 	const isDarkTemplate = $derived(templateId === 'chalkboard');
+	
+	const overlayOpacity = $derived(
+		typeof parsedCustomData?.overlayOpacity === 'number'
+			? parsedCustomData.overlayOpacity
+			: 0.35
+	);
+
+	const textColor = $derived(parsedCustomData?.textColor || '');
 
 	const templateConfig = $derived.by(() => {
 		switch (templateId) {
@@ -188,7 +196,7 @@
 </script>
 
 <div
-	class="invite-card {templateConfig.wrapperClass}"
+	class="invite-card {templateConfig.wrapperClass} has-custom-text-color"
 	style="
 		--primary: {primaryColor || '#E54666'};
 		--secondary: {secondaryColor || '#f472b6'};
@@ -196,6 +204,8 @@
 		--border-color: {templateConfig.borderColor};
 		--accent-color: {templateConfig.accentColor};
 		--card-font: {font || 'inherit'};
+		--overlay-opacity: {overlayOpacity};
+		--text-color: {textColor || (isDarkTemplate ? '#f5f5f4' : '#292524')};
 	"
 >
 	<!-- Background image with readability overlay -->
@@ -358,11 +368,11 @@
 	.bg-image-overlay {
 		position: absolute;
 		inset: 0;
-		background: rgba(255, 255, 255, 0.85);
+		background: rgba(255, 255, 255, var(--overlay-opacity));
 		z-index: 0;
 	}
 	.bg-image-overlay-dark {
-		background: rgba(28, 25, 23, 0.88);
+		background: rgba(255, 255, 255, var(--overlay-opacity));
 	}
 
 	/* Balloon Party */
@@ -683,9 +693,9 @@
 	}
 
 	.event-title {
+		color: var(--text-color);
 		font-size: 1.125rem;
 		font-weight: 600;
-		color: var(--color-neutral-700);
 		margin: 0;
 	}
 
@@ -694,7 +704,7 @@
 		align-items: center;
 		justify-content: center;
 		gap: 0.5rem;
-		color: var(--color-neutral-700);
+		color: var(--text-color);
 		font-size: 0.9375rem;
 	}
 
@@ -715,7 +725,7 @@
 	}
 
 	.card-body p {
-		color: var(--color-neutral-700);
+		color: var(--text-color);
 		font-size: 1rem;
 		line-height: 1.6;
 		margin: 0;
@@ -728,9 +738,15 @@
 	}
 
 	.card-footer p {
-		color: var(--color-neutral-500);
+		color: var(--text-color);
 		font-size: 0.875rem;
 		font-style: italic;
 		margin: 0;
 	}
+	.has-custom-text-color .event-title,
+	.has-custom-text-color .detail-row,
+	.has-custom-text-color .card-body p,
+	.has-custom-text-color .card-footer p {
+	color: var(--text-color) !important;
+}
 </style>
